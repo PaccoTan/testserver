@@ -96,7 +96,6 @@ app.get('/occupancy',function(req,res){
     }
     range.push({info: lotconfhis[t][lotName], time: t});
   }
-
   res.send(range);
   //Date(key*1000) -> correct day and time
   //time created is key
@@ -104,5 +103,19 @@ app.get('/occupancy',function(req,res){
   // lotname, lot_cap, max_occup, num_parked, num_parked_android, num_parked_ios
 });
 
+
+
+//Test code for PARKING MAP
+app.get('/recent-occupancy', function(req,res){
+  let lotName = req.query.lotName;
+  let lotconfhis = JSON.parse(fs.readFileSync('lotconfhis.json','utf-8'));
+  let times = Object.keys(lotconfhis);
+  for(i = times.length-1; i>=0; i--){
+    if(Object.keys(lotconfhis[times[i]])[0] == lotName){
+      res.send(lotconfhis[times[i]][lotName]);
+      break;
+    }
+  }
+});
 
 app.listen(port, () => console.log(`Running local server on port ${port}!`));
