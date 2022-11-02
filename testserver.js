@@ -91,10 +91,11 @@ app.get('/occupancy',function(req,res){
     if(t>end){
       continue;
     }
-    if(Object.keys(lotconfhis[t])[0] != lotName){
+    lot = Object.keys(lotconfhis[t])[0];
+    if(lot.trim() != lotName){
       continue;
     }
-    range.push({info: lotconfhis[t][lotName], time: t});
+    range.push({info: lotconfhis[t][lot], time: t});
   }
   res.send(range);
   //Date(key*1000) -> correct day and time
@@ -103,19 +104,24 @@ app.get('/occupancy',function(req,res){
   // lotname, lot_cap, max_occup, num_parked, num_parked_android, num_parked_ios
 });
 
-
-
 //Test code for PARKING MAP
 app.get('/recent-occupancy', function(req,res){
   let lotName = req.query.lotName;
   let lotconfhis = JSON.parse(fs.readFileSync('lotconfhis.json','utf-8'));
   let times = Object.keys(lotconfhis);
   for(i = times.length-1; i>=0; i--){
-    if(Object.keys(lotconfhis[times[i]])[0] == lotName){
-      res.send(lotconfhis[times[i]][lotName]);
-      break;
+    lot =Object.keys(lotconfhis[times[i]])[0];
+    //console.log(Object.keys(lotconfhis[times[i]])[0].trim(), lotName, "end")
+    if(lot.trim() === lotName){
+      result = lotconfhis[times[i]][lot];
+      result = {num_parked: result.num_parked,
+                    max_occup: result.max_occup,
+                    lot_cap: result.lot_cap};
+      res.send(result);
+      return;
     }
   }
+  res.send(null);
 });
 
 app.listen(port, () => console.log(`Running local server on port ${port}!`));
